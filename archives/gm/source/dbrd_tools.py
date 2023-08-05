@@ -13,7 +13,9 @@ import sqlite3
 
 def get_db_files(db_path="./"):
     db_files = [
-        file.split("/")[4] for file in glob.glob(db_path + "*.db") if file != "../../data/db/geo_zipcodes.db"
+        file.split("/")[4]
+        for file in glob.glob(f"{db_path}*.db")
+        if file != "../../data/db/geo_zipcodes.db"
     ]
 
     return tuple(sorted(db_files))

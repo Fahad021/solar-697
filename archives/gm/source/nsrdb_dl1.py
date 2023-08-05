@@ -20,11 +20,7 @@ logzero.logfile(log_path + log_file, maxBytes=1e6, backupCount=5, disableStderrL
 
 
 def get_periods(x):
-    if x == 8760:
-        periods = 24 * 365
-    else:
-        # leap year
-        periods = 24 * 366
+    periods = 24 * 365 if x == 8760 else 24 * 366
     return x
 
 
@@ -33,7 +29,7 @@ def main():
         with open("source/config.yml", "r") as config_in:
             configs = load(config_in, Loader=yaml.SafeLoader)
     except:
-        logger.error(f"config file open failure.")
+        logger.error("config file open failure.")
         exit(1)
 
     # url = f'{configs["url"]["url_string"]}'
@@ -52,18 +48,19 @@ def main():
         with open("source/locations.yml", "r") as locs_in:
             locs = load(locs_in, Loader=yaml.SafeLoader)
     except:
-        logger.error(f"location file open failure.")
+        logger.error("location file open failure.")
         exit(1)
 
     zip_codes = locs["locations"]
 
     logger.info(f"zip codes: {zip_codes}\n")
 
-    for yr_count, year in enumerate(years):
+    nrows = 1e5  # 1e5 for 24/7/365(6)
+
+    for year in years:
         for zip_count, zip_code in enumerate(zip_codes.keys()):
             req_str = (
-                f"https://developer.nrel.gov/api/solar/nsrdb_psm3_download.csv?"
-                + f'wkt=POINT({zip_codes[zip_code]["lon"]}%20{zip_codes[zip_code]["lat"]})'
+                f'https://developer.nrel.gov/api/solar/nsrdb_psm3_download.csv?wkt=POINT({zip_codes[zip_code]["lon"]}%20{zip_codes[zip_code]["lat"]})'
                 + f"&names={year}"
                 + f'&leap_day={cfg_vars["leap_year"]}'
                 + f'&interval={cfg_vars["interval"]}'
@@ -77,8 +74,6 @@ def main():
                 + f'&attributes={cfg_vars["attrs"]}'
             )
             logger.info(req_str)
-
-            nrows = 1e5  # 1e5 for 24/7/365(6)
 
             # Return just the first 2 lines to get metadata:
             df_raw = pd.read_csv(req_str, nrows=nrows)
@@ -109,8 +104,8 @@ def main():
             df_data.insert(0, "zip_code", zip_code)
 
             data_names = [
-                (df_data, "nsrdb_" + str(zip_code) + "_" + str(year) + ".csv"),
-                (df_meta, "nsrdb_meta_" + str(zip_code) + "_" + str(year) + ".csv"),
+                (df_data, f"nsrdb_{str(zip_code)}_{str(year)}.csv"),
+                (df_meta, f"nsrdb_meta_{str(zip_code)}_{str(year)}.csv"),
             ]
 
             for item in data_names:

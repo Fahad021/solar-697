@@ -18,7 +18,7 @@ logzero.logfile(
     backupCount=1,
     disableStderrLogger=True,
 )
-logger.info(f"pmd_plot_tools logger initialized")
+logger.info("pmd_plot_tools logger initialized")
 
 configs = None
 try:
@@ -26,13 +26,13 @@ try:
         configs = yaml.load(config_in, Loader=yaml.SafeLoader)
         logger.info(f"{configs}\n")
 except:
-    logger.error(f"config file open failure.")
+    logger.error("config file open failure.")
     exit(1)
 
 def plot_forecast(train, test, forecast, title="Title", zipcode="01001"):
     
     colors = (("blue", 0.5), ("orange", 0.9), ("green", 0.75))
-    
+
     # actual = test
     rmse = np.sqrt(np.mean((forecast - test) ** 2))
     logger.info(f"RMSE: {rmse}")
@@ -41,7 +41,7 @@ def plot_forecast(train, test, forecast, title="Title", zipcode="01001"):
     data_streams = [train, test, forecast]
 
     fig = go.Figure()
-    
+
     for idx, data in enumerate(data_streams):
         fig.add_trace(
             go.Scatter(
@@ -57,7 +57,9 @@ def plot_forecast(train, test, forecast, title="Title", zipcode="01001"):
 
     fig.update_layout(
         title=dict(
-            text=(f"{title} {len(forecast)}-Month Forecast<br>Zip Code {zipcode}<br>RMSE: {rmse:0.3f}"),
+            text=(
+                f"{title} {len(forecast)}-Month Forecast<br>Zip Code {zipcode}<br>RMSE: {rmse:0.3f}"
+            ),
             xanchor="center",
             x=0.5,
             font=dict(
@@ -82,14 +84,24 @@ def plot_forecast(train, test, forecast, title="Title", zipcode="01001"):
         ),
         xaxis=dict(
             rangeselector=dict(
-                buttons=list(
-                    [
-                        dict(count=5, label="5yr", step="year", stepmode="backward"),
-                        dict(count=10, label="10yr", step="year", stepmode="backward"),
-                        dict(count=15, label="15yr", step="year", stepmode="backward"),
-                        dict(step="all"),
-                    ]
-                )
+                buttons=[
+                    dict(
+                        count=5, label="5yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=10,
+                        label="10yr",
+                        step="year",
+                        stepmode="backward",
+                    ),
+                    dict(
+                        count=15,
+                        label="15yr",
+                        step="year",
+                        stepmode="backward",
+                    ),
+                    dict(step="all"),
+                ]
             ),
             rangeslider=dict(visible=True),
             type="date",
@@ -115,8 +127,8 @@ def plot_histograms(df, title="Raw Data", zipcode="10001", t_range=[0, None]):
         shared_yaxes=True,
     )
 
-    for _, row in enumerate(range(1, layout["rows"] + 1)):
-        for _, col in enumerate(range(1, layout["columns"] + 1)):
+    for row in range(1, layout["rows"] + 1):
+        for col in range(1, layout["columns"] + 1):
             fig.add_trace(
                 go.Histogram(
                     x=df_plot[columns[col_idx]],
@@ -137,7 +149,7 @@ def plot_histograms(df, title="Raw Data", zipcode="10001", t_range=[0, None]):
 
     fig.update_layout(
         title=dict(
-            text=f"Feature Histograms",
+            text="Feature Histograms",
             xanchor="center",
             x=0.5,
             font=dict(
@@ -169,9 +181,8 @@ def plot_histograms(df, title="Raw Data", zipcode="10001", t_range=[0, None]):
 
 def plot_trends(df, title="Data", zipcode="01001", units={}):
 
-    idx = 0
     cols = df.columns.tolist()
-    units_text = [value for value in units.values()]
+    units_text = list(units.values())
     layout = ts_tools.get_plots_layout(num_columns=1, num_items=len(cols))
 
     decomps = ts_tools.get_data_decomps(df, period=12)
@@ -183,7 +194,7 @@ def plot_trends(df, title="Data", zipcode="01001", units={}):
         shared_xaxes=False,
     )
 
-    for feature, series in decomps.items():
+    for idx, (feature, series) in enumerate(decomps.items()):
         fig.add_trace(
             go.Scatter(
                 x=series.trend.index,
@@ -203,8 +214,6 @@ def plot_trends(df, title="Data", zipcode="01001", units={}):
             row=idx + 1,
             col=layout["columns"],
         )
-        idx += 1
-
     fig.update_layout(
         title=dict(
             text=f"{title}, Zip Code: {zipcode}",
@@ -216,18 +225,20 @@ def plot_trends(df, title="Data", zipcode="01001", units={}):
         autosize=True,
         margin=dict(l=0, r=0, b=0, t=75, pad=25),
         legend=dict(orientation="h", yanchor="bottom", y=-0.1),
-        # yaxis=dict(title=dict(standoff=0)),
         xaxis=dict(
             rangeselector=dict(
-                buttons=list(
-                    [
-                        # dict(count=1, label="1yr", step="year", stepmode="backward"),
-                        # dict(count=2, label="2yr", step="year", stepmode="backward"),
-                        dict(count=5, label="5yr", step="year", stepmode="backward"),
-                        dict(count=10, label="10yr", step="year", stepmode="backward"),
-                        dict(step="all"),
-                    ]
-                ),
+                buttons=[
+                    dict(
+                        count=5, label="5yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=10,
+                        label="10yr",
+                        step="year",
+                        stepmode="backward",
+                    ),
+                    dict(step="all"),
+                ],
                 bgcolor=COLORS["button_background"],
                 y=1.07,
             ),
@@ -258,10 +269,10 @@ def plot_data(df, title="Raw Data", zipcode="10001", units={}):
         shared_xaxes=False,
     )
 
-    units_text = [value for value in units.values()]
+    units_text = list(units.values())
 
-    for _, row in enumerate(range(1, layout["rows"] + 1)):
-        for _, col in enumerate(range(1, layout["columns"] + 1)):
+    for row in range(1, layout["rows"] + 1):
+        for col in range(1, layout["columns"] + 1):
             fig.add_trace(
                 go.Scatter(
                     x=df.index,
@@ -311,15 +322,24 @@ def plot_data(df, title="Raw Data", zipcode="10001", units={}):
         ),
         xaxis=dict(
             rangeselector=dict(
-                buttons=list(
-                    [
-                        dict(count=1, label="1yr", step="year", stepmode="backward"),
-                        dict(count=2, label="2yr", step="year", stepmode="backward"),
-                        dict(count=5, label="5yr", step="year", stepmode="backward"),
-                        dict(count=10, label="10yr", step="year", stepmode="backward"),
-                        dict(step="all"),
-                    ]
-                ),
+                buttons=[
+                    dict(
+                        count=1, label="1yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=2, label="2yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=5, label="5yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=10,
+                        label="10yr",
+                        step="year",
+                        stepmode="backward",
+                    ),
+                    dict(step="all"),
+                ],
                 bgcolor="#444444",
                 y=1.07,
             ),
@@ -385,15 +405,24 @@ def plot_multi_line(df, title="Title", locale=[], columns=[]):
         ),
         xaxis=dict(
             rangeselector=dict(
-                buttons=list(
-                    [
-                        dict(count=1, label="1yr", step="year", stepmode="backward"),
-                        dict(count=2, label="2yr", step="year", stepmode="backward"),
-                        dict(count=5, label="5yr", step="year", stepmode="backward"),
-                        dict(count=10, label="10yr", step="year", stepmode="backward"),
-                        dict(step="all"),
-                    ]
-                ),
+                buttons=[
+                    dict(
+                        count=1, label="1yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=2, label="2yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=5, label="5yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=10,
+                        label="10yr",
+                        step="year",
+                        stepmode="backward",
+                    ),
+                    dict(step="all"),
+                ],
                 bgcolor="#444444",
                 y=1.07,
             ),

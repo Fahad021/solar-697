@@ -17,7 +17,7 @@ def make_supervised(data, lag=1):
 
 # create a differenced series
 def difference(dataset, interval=1):
-    diff = list()
+    diff = []
     for i in range(interval, len(dataset)):
         value = dataset[i] - dataset[i - interval]
         diff.append(value)
@@ -42,7 +42,7 @@ def persistence_forecast_plot(train, test):
     # From Resources #1
 
     # walk-forward validation
-    history = [x for x in train]
+    history = list(train)
     predictions = []
 
     for i in range(len(test)):

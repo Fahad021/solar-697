@@ -140,7 +140,7 @@ def graph_output(db_filename, zipcode):
         df = ts_tools.get_irr_data(conn, zipcode)
         logger.info(f"app2 Made else: {db_filename}, {zipcode}")
 
-    logger.info(f"app2 passed if/elif/else")
+    logger.info("app2 passed if/elif/else")
 
     title1 = "Trend Data (decomposed)"
     fig1 = plot_tools.plot_trends(

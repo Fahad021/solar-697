@@ -212,14 +212,14 @@ def graph_output(db_filename, zipcode):
         df = ts_tools.get_irr_data(conn, zipcode)
         logger.info(f"app1 Made else: {db_filename}, {zipcode}")
 
-    logger.info(f"app1 passed if/elif/else")
+    logger.info("app1 passed if/elif/else")
 
     df_desc = df.describe().transpose().round(decimals=2).reset_index(drop=False)
     df_desc.rename(columns={"index": "feature"}, inplace=True)
-    df_desc.insert(loc=1, column="unit", value=[value for value in cfg["data_units"].values()])
+    df_desc.insert(loc=1, column="unit", value=list(cfg["data_units"].values()))
     desc_columns = [{"id": col, "name": col} for col in df_desc.columns]
 
-    logger.info(f"app1 passed df_desc")
+    logger.info("app1 passed df_desc")
 
     title1 = "Irradiance Data"
     fig1 = plot_tools.plot_irradiance(
