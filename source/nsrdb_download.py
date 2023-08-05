@@ -30,7 +30,7 @@ try:
         configs = load(config_in, Loader=yaml.SafeLoader)
         logger.info(f"{configs}\n")
 except:
-    logger.error(f"config file open failure.")
+    logger.error("config file open failure.")
     exit(1)
 
 cfg_vars = configs["url_variables"]
@@ -70,7 +70,7 @@ try:
         locs = load(locs_in, Loader=yaml.SafeLoader)
         logger.info(locs)
 except:
-    logger.error(f"location file open failure.")
+    logger.error("location file open failure.")
     exit(1)
 
 zip_codes = locs["zipcodes"]
@@ -106,20 +106,36 @@ if zip_import:
 for year in years:
     for zip_code in tqdm(zip_codes.keys()):
         req_str = (
-            f"https://developer.nrel.gov/api/solar/nsrdb_psm3_download.csv?"
-            + f'wkt=POINT({zip_codes[zip_code]["lon"]}%20{zip_codes[zip_code]["lat"]})'
-            + f"&names={year}"
-            + f'&leap_day={cfg_vars["leap_year"]}'
-            + f'&interval={cfg_vars["interval"]}'
-            + f'&utc={cfg_vars["utc"]}'
-            + f'&full_name={cfg_vars["name"]}'
-            + f'&email={cfg_vars["email"]}'
-            + f'&affiliation={cfg_vars["affiliation"]}'
-            + f'&mailing_list={cfg_vars["mailing_list"]}'
-            + f'&reason={cfg_vars["use"]}'
+            (
+                (
+                    (
+                        (
+                            (
+                                (
+                                    (
+                                        (
+                                            (
+                                                f'https://developer.nrel.gov/api/solar/nsrdb_psm3_download.csv?wkt=POINT({zip_codes[zip_code]["lon"]}%20{zip_codes[zip_code]["lat"]})'
+                                                + f"&names={year}"
+                                            )
+                                            + f'&leap_day={cfg_vars["leap_year"]}'
+                                        )
+                                        + f'&interval={cfg_vars["interval"]}'
+                                    )
+                                    + f'&utc={cfg_vars["utc"]}'
+                                )
+                                + f'&full_name={cfg_vars["name"]}'
+                            )
+                            + f'&email={cfg_vars["email"]}'
+                        )
+                        + f'&affiliation={cfg_vars["affiliation"]}'
+                    )
+                    + f'&mailing_list={cfg_vars["mailing_list"]}'
+                )
+                + f'&reason={cfg_vars["use"]}'
+            )
             + f'&api_key={nrel_key}'
-            + f'&attributes={cfg_vars["attrs"]}'
-        )
+        ) + f'&attributes={cfg_vars["attrs"]}'
 
         logger.info(f"{req_str}\n")
 
@@ -166,8 +182,8 @@ for year in years:
         df_data.insert(2, "location_id", df_meta["Location ID"])
 
         data_names = [
-            (df_data, "nsrdb_" + str(zip_code) + "_" + str(year) + ".csv"),
-            (df_meta, "nsrdb_meta_" + str(zip_code) + "_" + str(year) + ".csv"),
+            (df_data, f"nsrdb_{str(zip_code)}_{str(year)}.csv"),
+            (df_meta, f"nsrdb_meta_{str(zip_code)}_{str(year)}.csv"),
         ]
 
         try:
@@ -182,7 +198,7 @@ for year in years:
             count = cursor.fetchone()
             # logger.info(count)
 
-            if (count[0] == "8760") or (count[0] == "8784"):
+            if count[0] in ["8760", "8784"]:
                 logger.warning(f"data for {year}, {zip_code} already present\n")
             else:
                 df_data.to_sql("nsrdb", conn, if_exists="append", index=False, method="multi")

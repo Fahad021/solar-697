@@ -17,7 +17,7 @@ logzero.logfile(
     backupCount=1,
     disableStderrLogger=True,
 )
-logger.info(f"pmd_tools logger initialized")
+logger.info("pmd_tools logger initialized")
 
 
 @lru_cache(maxsize=64)

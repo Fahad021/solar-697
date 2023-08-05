@@ -193,7 +193,7 @@ def return_zipcode_value(zipcode):
     Input("app3-dd-db-selection", "value"),
 )
 def get_features(file_name):
-    logger.info(f"get_features callback")
+    logger.info("get_features callback")
 
     conn = ts_tools.get_db_connection(db_path, file_name)
     col_names = ts_tools.get_column_names(conn, cfg["table_names"]["db_table1"])
@@ -201,13 +201,7 @@ def get_features(file_name):
 
     logger.info(f"app3 column names:\n{col_names}")
 
-    column_names = []
-
-    for name in col_names:
-        if name in cfg["drop_columns"]:
-            continue
-        column_names.append(name)
-
+    column_names = [name for name in col_names if name not in cfg["drop_columns"]]
     logger.info(f"app3 feature names: {column_names}")
 
     # return the list object to properly populate the dropdown!
@@ -270,7 +264,7 @@ def graph_output(n_clicks, db_filename, zipcode, feature, seasonal):
         logger.info(f"app3 Made else: {db_filename}, {zipcode}, {locale_data}, {feature}")
         # print(f"Made else: {db_filename}, {zipcode}, {locale_data}, {feature}")
 
-    logger.info(f"app3 passed if/elif/else")
+    logger.info("app3 passed if/elif/else")
     logger.info(f"{db_filename}, {zipcode}, {locale_data}, {feature}")
     # print(f"ready for forecast: {db_filename}, {zipcode}, {locale_data}, {feature}")
 
@@ -346,7 +340,7 @@ def graph_output(n_clicks, db_filename, zipcode, feature, seasonal):
 
         else:
             fig2 = go.Figure()
-            logger.info(f"app3 seasonal skipped")
+            logger.info("app3 seasonal skipped")
 
         return fig1, fig2
 

@@ -33,7 +33,7 @@ def get_configs():
             configs = load(config_in, Loader=yaml.SafeLoader)
             logger.info(f"{configs}\n")
     except:
-        logger.error(f"config file open failure.")
+        logger.error("config file open failure.")
         exit(1)
 
     return configs
@@ -45,7 +45,7 @@ def get_locations():
             locs = load(locs_in, Loader=yaml.SafeLoader)
             logger.info(locs)
     except:
-        logger.error(f"location file open failure.")
+        logger.error("location file open failure.")
         exit(1)
 
     return locs
@@ -78,11 +78,10 @@ def main():
     cursor.execute(queries.create_table_nsrdb)
     conn.commit()
 
-    for yr_count, year in enumerate(years):
+    for year in years:
         for zip_count, zip_code in enumerate(zip_codes.keys()):
             req_str = (
-                f"https://developer.nrel.gov/api/solar/nsrdb_psm3_download.csv?"
-                + f'wkt=POINT({zip_codes[zip_code]["lon"]}%20{zip_codes[zip_code]["lat"]})'
+                f'https://developer.nrel.gov/api/solar/nsrdb_psm3_download.csv?wkt=POINT({zip_codes[zip_code]["lon"]}%20{zip_codes[zip_code]["lat"]})'
                 + f"&names={year}"
                 + f'&leap_day={cfg_vars["leap_year"]}'
                 + f'&interval={cfg_vars["interval"]}'
@@ -135,8 +134,8 @@ def main():
             df_data.insert(1, "zip_code", zip_code)
 
             data_names = [
-                (df_data, "nsrdb_" + str(zip_code) + "_" + str(year) + ".csv"),
-                (df_meta, "nsrdb_meta_" + str(zip_code) + "_" + str(year) + ".csv"),
+                (df_data, f"nsrdb_{str(zip_code)}_{str(year)}.csv"),
+                (df_meta, f"nsrdb_meta_{str(zip_code)}_{str(year)}.csv"),
             ]
 
             for item in data_names:

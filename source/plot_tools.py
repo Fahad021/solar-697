@@ -16,7 +16,7 @@ logzero.logfile(
     backupCount=1,
     disableStderrLogger=True,
 )
-logger.info(f"plot_tools logger initialized")
+logger.info("plot_tools logger initialized")
 
 
 try:
@@ -24,7 +24,7 @@ try:
         cfg = yaml.load(config_in, Loader=yaml.SafeLoader)
         logger.info(f"{cfg}\n")
 except:
-    logger.error(f"config file open failure.")
+    logger.error("config file open failure.")
     exit(1)
 
 
@@ -42,8 +42,8 @@ def plot_irradiance(df, title="Irradiance Data", zipcode="", irr_columns=[], loc
     )
 
     col_idx = 0
-    for _, row in enumerate(range(1, layout["rows"] + 1)):
-        for _, col in enumerate(range(1, layout["columns"] + 1)):
+    for row in range(1, layout["rows"] + 1):
+        for col in range(1, layout["columns"] + 1):
             fig.add_trace(
                 go.Scatter(
                     x=df.index,
@@ -69,15 +69,24 @@ def plot_irradiance(df, title="Irradiance Data", zipcode="", irr_columns=[], loc
         ),
         xaxis=dict(
             rangeselector=dict(
-                buttons=list(
-                    [
-                        dict(count=1, label="1yr", step="year", stepmode="backward"),
-                        dict(count=2, label="2yr", step="year", stepmode="backward"),
-                        dict(count=5, label="5yr", step="year", stepmode="backward"),
-                        dict(count=10, label="10yr", step="year", stepmode="backward"),
-                        dict(step="all"),
-                    ]
-                ),
+                buttons=[
+                    dict(
+                        count=1, label="1yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=2, label="2yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=5, label="5yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=10,
+                        label="10yr",
+                        step="year",
+                        stepmode="backward",
+                    ),
+                    dict(step="all"),
+                ],
                 bgcolor="#444444",
                 y=1.07,
             ),
@@ -112,8 +121,8 @@ def plot_histograms(df, title="", zipcode=""):
         shared_yaxes=True,
     )
 
-    for _, row in enumerate(range(1, layout["rows"] + 1)):
-        for _, col in enumerate(range(1, layout["columns"] + 1)):
+    for row in range(1, layout["rows"] + 1):
+        for col in range(1, layout["columns"] + 1):
             fig.add_trace(
                 go.Histogram(
                     x=df[columns[col_idx]],
@@ -135,7 +144,7 @@ def plot_histograms(df, title="", zipcode=""):
 
     fig.update_layout(
         title=dict(
-            text=f"Feature Histograms",
+            text="Feature Histograms",
             font=dict(family="Arial", size=16),
             xanchor="center",
             x=0.5,
@@ -183,15 +192,24 @@ def plot_multi_line(df, title="Title", locale=[], columns=[]):
         ),
         xaxis=dict(
             rangeselector=dict(
-                buttons=list(
-                    [
-                        dict(count=1, label="1yr", step="year", stepmode="backward"),
-                        dict(count=2, label="2yr", step="year", stepmode="backward"),
-                        dict(count=5, label="5yr", step="year", stepmode="backward"),
-                        dict(count=10, label="10yr", step="year", stepmode="backward"),
-                        dict(step="all"),
-                    ]
-                ),
+                buttons=[
+                    dict(
+                        count=1, label="1yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=2, label="2yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=5, label="5yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=10,
+                        label="10yr",
+                        step="year",
+                        stepmode="backward",
+                    ),
+                    dict(step="all"),
+                ],
                 bgcolor="#444444",
                 y=1.07,
             ),
@@ -217,7 +235,7 @@ def plot_trends(df, title="", zipcode="", locale=[]):
 
     cols = df.columns.tolist()
     layout = ts_tools.get_plots_layout(num_columns=1, num_items=len(cols))
-    units_text = [value for value in cfg["data_units"].values()]
+    units_text = list(cfg["data_units"].values())
 
     decomps = ts_tools.get_data_decomps(df, period=12)
 
@@ -263,17 +281,24 @@ def plot_trends(df, title="", zipcode="", locale=[]):
         ),
         xaxis=dict(
             rangeselector=dict(
-                buttons=list(
-                    [
-                        dict(count=2, label="2yr", step="year", stepmode="backward"),
-                        dict(count=5, label="5yr", step="year", stepmode="backward"),
-                        dict(count=10, label="10yr", step="year", stepmode="backward"),
-                        dict(step="all"),
-                    ]
-                ),
+                buttons=[
+                    dict(
+                        count=2, label="2yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=5, label="5yr", step="year", stepmode="backward"
+                    ),
+                    dict(
+                        count=10,
+                        label="10yr",
+                        step="year",
+                        stepmode="backward",
+                    ),
+                    dict(step="all"),
+                ],
                 bgcolor=cfg["COLORS"]["button_background"],
                 y=1.07,
-            ),
+            )
         ),
         margin=dict(l=0, r=5, b=5, t=90, pad=0),
         legend=dict(orientation="h", yanchor="bottom", y=-0.1),
@@ -323,14 +348,27 @@ def plot_forecast(train, test, test_pred, forecast, title="", zipcode="", locale
         ),
         xaxis=dict(
             rangeselector=dict(
-                buttons=list(
-                    [
-                        dict(count=10, label="10yr", step="year", stepmode="backward"),
-                        dict(count=15, label="15yr", step="year", stepmode="backward"),
-                        dict(count=20, label="20yr", step="year", stepmode="backward"),
-                        dict(step="all"),
-                    ]
-                ),
+                buttons=[
+                    dict(
+                        count=10,
+                        label="10yr",
+                        step="year",
+                        stepmode="backward",
+                    ),
+                    dict(
+                        count=15,
+                        label="15yr",
+                        step="year",
+                        stepmode="backward",
+                    ),
+                    dict(
+                        count=20,
+                        label="20yr",
+                        step="year",
+                        stepmode="backward",
+                    ),
+                    dict(step="all"),
+                ],
                 bgcolor=cfg["COLORS"]["button_background"],
             ),
             rangeslider=dict(visible=True),

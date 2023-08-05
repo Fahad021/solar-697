@@ -22,7 +22,7 @@ logzero.logfile(
     backupCount=1,
     disableStderrLogger=True,
 )
-logger.info(f"ts_tools logger initialized")
+logger.info("ts_tools logger initialized")
 
 
 
@@ -55,7 +55,7 @@ def get_locale_data(conn, zipcode):
     cursor = conn.cursor()
     cursor.execute(queries.select_locale_data, {"zipcode": zipcode})
     query_data = cursor.fetchone()
-    locale_data = [qd for qd in query_data]
+    locale_data = list(query_data)
     logger.info(f"Locale data: {locale_data}")
     return locale_data
 
@@ -95,13 +95,12 @@ def get_plots_layout(num_columns=1, num_items=1):
 
 def get_data_decomps(df, period=12):
     """data decomposition"""
-    decomps = {}
     cols = df.columns.tolist()
 
-    for col in cols:
-        decomps.update({col: seasonal_decompose(df[col], model="additive", period=period)})
-
-    return decomps
+    return {
+        col: seasonal_decompose(df[col], model="additive", period=period)
+        for col in cols
+    }
 
 
 def get_train_test(df, test_len_yrs=1):

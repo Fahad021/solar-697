@@ -47,7 +47,7 @@ def get_locale_data(conn, zipcode):
     cursor = conn.cursor()
     cursor.execute(queries.select_locale_data, {"zipcode": zipcode})
     query_data = cursor.fetchone()
-    locale_data = [qd for qd in query_data]
+    locale_data = list(query_data)
     logger.info(f"Locale data: {locale_data}")
     return locale_data
 
@@ -84,13 +84,12 @@ def get_plots_layout(num_columns=1, num_items=1):
 
 
 def get_data_decomps(df, period=12):
-    decomps = {}
     cols = df.columns.tolist()
 
-    for col in cols:
-        decomps.update({col: seasonal_decompose(df[col], model="additive", period=period)})
-
-    return decomps
+    return {
+        col: seasonal_decompose(df[col], model="additive", period=period)
+        for col in cols
+    }
 
 
 def get_train_test(df, test_len_yrs=1):
@@ -110,14 +109,13 @@ def get_train_test(df, test_len_yrs=1):
 
 
 def get_forecast():
-    forecast = ts_tools.sarima_model(
+    return ts_tools.sarima_model(
         sarima_train,
         *best_order,
         s=12,
         num_fc=119,
         forecast=True,
     )
-    return forecast
 
 #-----------------------------------------------------------------------------#
 def gen_arima_params(p_rng=(0, 0), d_rng=(0, 0), q_rng=(0, 0), debug=False):
@@ -336,11 +334,7 @@ def gen_varmax_params(p_rng=(0, 0), q_rng=(0, 0), debug=False):
     parameters = product(p, q)
     parameters_list = list(parameters)
 
-    order_list = []
-
-    for params in parameters_list:
-        order_list.append(tuple(list(params)))
-
+    order_list = [tuple(list(params)) for params in parameters_list]
     if debug:
         print(f"VARMA Order list length: {len(order_list)}")
         print(f"VARMA Order list\n {order_list[:3]}")
